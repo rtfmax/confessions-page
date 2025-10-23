@@ -142,7 +142,6 @@
                 <li>No personal information will be collected</li>
             </ul>
         </div>
-
         <form id="confessionForm">
             <label for="confession">Your Confession:</label>
             <textarea 
@@ -156,13 +155,10 @@
             <div class="char-count">
                 <span id="charCount">0</span> / 1000 characters
             </div>
-            
             <button type="submit" id="submitBtn">Submit Confession</button>
         </form>
-
-        <div class="status-message" id="statusMessage"></div>
+        <div id="statusMessage" class="status-message"></div>
     </div>
-
     <script>
         // Character counter
         const textarea = document.getElementById('confession');
@@ -170,11 +166,9 @@
         const form = document.getElementById('confessionForm');
         const submitBtn = document.getElementById('submitBtn');
         const statusMessage = document.getElementById('statusMessage');
-
         textarea.addEventListener('input', function() {
             charCount.textContent = this.value.length;
         });
-
         // Form submission
         form.addEventListener('submit', async function(e) {
             e.preventDefault();
@@ -185,26 +179,28 @@
                 showMessage('Please write at least 10 characters.', 'error');
                 return;
             }
-
             submitBtn.disabled = true;
             submitBtn.textContent = 'Submitting...';
-
             try {
-                // TODO: Replace with your actual Supabase credentials
-                // Instructions for Supabase integration:
-                // 1. Create a Supabase project at https://supabase.com
-                // 2. Create a table named 'confessions' with columns:
-                //    - id (int8, primary key, auto-increment)
-                //    - confession (text)
-                //    - created_at (timestamp with time zone, default: now())
-                // 3. Enable Row Level Security (RLS) and add an INSERT policy
-                // 4. Replace SUPABASE_URL and SUPABASE_ANON_KEY below
+                // ===== SUPABASE CONFIGURATION =====
+                // STEP 1: Replace these placeholders with your Supabase credentials
+                // Get them from: https://app.supabase.com/project/YOUR_PROJECT/settings/api
                 
-                const SUPABASE_URL = 'YOUR_SUPABASE_URL_HERE';
-                const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY_HERE';
+                const SUPABASE_URL = 'YOUR_SUPABASE_URL_HERE';  // Example: https://xxxxx.supabase.co
+                const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY_HERE';  // Example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
                 
-                // Uncomment this block once Supabase is configured:
-                /*
+                // STEP 2: Make sure you've created a table called 'confessions' with these columns:
+                //   - id (int8, primary key, auto-increment)
+                //   - confession (text)
+                //   - created_at (timestamp with time zone, default: now())
+                //
+                // STEP 3: Enable Row Level Security (RLS) and add an INSERT policy:
+                //   Policy name: "Allow anonymous inserts"
+                //   Policy command: INSERT
+                //   Check expression: true
+                
+                // ===== END CONFIGURATION =====
+                
                 const response = await fetch(`${SUPABASE_URL}/rest/v1/confessions`, {
                     method: 'POST',
                     headers: {
@@ -218,26 +214,22 @@
                         created_at: new Date().toISOString()
                     })
                 });
-
                 if (!response.ok) {
                     throw new Error('Failed to submit confession');
                 }
-                */
-
-                // Temporary success message (remove when Supabase is configured)
-                showMessage('✅ Confession submitted successfully! (Demo mode - configure Supabase to save)', 'success');
+                
+                showMessage('✅ Confession submitted successfully!', 'success');
                 textarea.value = '';
                 charCount.textContent = '0';
                 
             } catch (error) {
                 console.error('Error:', error);
-                showMessage('❌ Failed to submit confession. Please try again.', 'error');
+                showMessage('❌ Failed to submit confession. Please make sure Supabase is configured correctly.', 'error');
             } finally {
                 submitBtn.disabled = false;
                 submitBtn.textContent = 'Submit Confession';
             }
         });
-
         function showMessage(message, type) {
             statusMessage.textContent = message;
             statusMessage.className = `status-message ${type}`;
